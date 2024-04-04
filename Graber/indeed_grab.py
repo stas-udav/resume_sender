@@ -24,23 +24,39 @@ driver.get(indeed_search_url)
 wait_loading_page(driver, 5,'//footer[@class="icl-GlobalFooter"]')
 
 # searching for job by cretaria
-# job = {}
 jobs = driver.find_elements(By.XPATH, '//div[@data-testid="slider_item"]')
 print(len(jobs))
 
 # click on job_description to open side menu with "apply button" and click on "apply button"
+job_title_links = {}
+saved_jobs = 0
 
-for job in jobs:
-    job.click()
-    time.sleep(1)
-    #searching for apply button
-    try:
-        apply_button = driver.find_element(By.XPATH, '//div[@class="ia-IndeedApplyButton"]')    
-        job_title = job.text.split('\n')[0].strip()
-        print(job_title)        
-    except NoSuchElementException:
-        print("Apply on company web-site", job.get_attribute("title"))
+while saved_jobs < len(jobs):
+    for job in jobs:
+        job.click()
+        time.sleep(1)        
+        saved_jobs +=1
+        print(saved_jobs)
+        #searching for apply button
+        try:
+            apply_button = driver.find_element(By.XPATH, '//div[@class="ia-IndeedApplyButton"]')    
+            job_title = job.text.split('\n')[0].strip()
+            job_link = job.find_element(By.XPATH, '//a').get_attribute('href')
+            print (apply_button.text)
+            # print(job_link)
+            # print(job_title)
+            job_title_links[job_title] = job_link
+        except NoSuchElementException:
+            print("Apply on company web-site", job.get_attribute("title"))
+    else: 
+        print("end od page")
+        print(saved_jobs)
+
+else:
+    next_page = driver.find_element(By.XPATH, '//a[@data-testid="pagination-page-next"]')
+    next_page.click()
+    time.sleep(5)
     
-
+        # print(job_title_links)
 
 

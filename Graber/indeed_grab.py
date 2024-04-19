@@ -17,7 +17,7 @@ driver = webdriver.Chrome()
 driver.maximize_window() 
 
 # getting url for scrapping
-indeed_search_url = get_url("software+qa", indeed_job_search_24hours)
+indeed_search_url = get_url("software+qa", indeed_job_search_3days)
 
 # open url in browser
 driver.get(indeed_search_url)
@@ -46,19 +46,20 @@ while next_page:
             time.sleep(1)        
             saved_jobs +=1
             # print(saved_jobs)
-
+            
             #searching for apply button (direct apply on indeed)
             try:
                 time.sleep(1)
                 apply_button = driver.find_element(By.XPATH, '//div[@class="ia-IndeedApplyButton"]')    
                 job_title = job.text.split('\n')[0].strip()
+                print(job_title)
                 job_link = job.find_element(By.XPATH, '//a').get_attribute('href')
-                company_name = driver.find_element(By.XPATH, '//div[@class="company_location css-17fky0v e37uo190"]')
-                print (apply_button.text)
+                # company_name_job = job.text.split('\n')[4].strip()
+                company_name = job.find_element(By.XPATH, './/span[@data-testid="company-name"]').text
+                # print (apply_button.text)
                 print(job_link)
-                print(company_name)
-                # print(job_title)
-                job_title_links[job_title] = [job_link, datetime.datetime.now().strftime("%d-%m-%Y")]
+                print(company_name)                
+                job_title_links[job_title] = [job_link, company_name, datetime.datetime.now().strftime("%d-%m-%Y")]
                 time.sleep(random.uniform(1, 10))  
 
             # if applying only on company web-site we skipped              
@@ -83,11 +84,11 @@ else:
     print(job_title_links)
 
 # convert dictionary to a dataframe
-df = pd.DataFrame(list(job_title_links.items()), columns=['Title', 'Link'])
+# df = pd.DataFrame(list(job_title_links.items()), columns=['Title', 'Link'])
 
 # write the dataframe object into excel file
-df.to_excel("output1.xlsx", index=False, header=True)
-print(job_title_links)    
+# df.to_excel("output1.xlsx", index=False, header=True)
+# print(job_title_links)    
         # print(job_title_links)
 
 

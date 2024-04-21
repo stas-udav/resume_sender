@@ -8,7 +8,6 @@ from selenium.common.exceptions import NoSuchElementException
 import pandas as pd
 import time
 import random
-import datetime
 
 # Create a new browser instance 
     # Setup
@@ -59,14 +58,16 @@ while next_page:
                 # print (apply_button.text)
                 print(job_link)
                 print(company_name)                
-                job_title_links[job_title] = [job_link, company_name, datetime.datetime.now().strftime("%d-%m-%Y")]
+                job_title_links[job_title] = [job_link, company_name, today_date()]
+                print(today_date())
                 time.sleep(random.uniform(1, 10))  
-
+                
             # if applying only on company web-site we skipped              
             except NoSuchElementException:
                 print("Apply on company web-site", job.get_attribute("title"))  
                 time.sleep(random.uniform(1, 3))  
-    save_jobs_json(job_title_links, "jobs_indeed.json")                        
+    if job_title_links:
+        save_jobs_json(job_title_links, "jobs_indeed_test2456.json")                        
     # else: 
     print("End od Page")
     print(saved_jobs)
@@ -82,13 +83,3 @@ while next_page:
 else: 
     print("last page done!")
     print(job_title_links)
-
-# convert dictionary to a dataframe
-# df = pd.DataFrame(list(job_title_links.items()), columns=['Title', 'Link'])
-
-# write the dataframe object into excel file
-# df.to_excel("output1.xlsx", index=False, header=True)
-# print(job_title_links)    
-        # print(job_title_links)
-
-

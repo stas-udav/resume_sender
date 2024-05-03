@@ -6,7 +6,10 @@ from selenium.webdriver.common.by import By
 import time
 import json
 import datetime
-
+import imaplib
+import email
+from email.header import decode_header
+import re
 
 # Getting url for job searching
 def get_url(position, website):
@@ -52,16 +55,41 @@ def save_jobs_json(jobs_data, filename):
     # check duplicates for each job in file
     for job_title, company_name in jobs_data.items():
         # print (jobs_data.items())
+
         # Create key from company_name + job_title
         key = f'{company_name}-{job_title}'
+        # If duplicate in existing_jobs skipped and moving forward
         if key not in existing_jobs:
             # If this key not exist in file we add in new dict
             existing_jobs[job_title] = company_name, today_date()
-    # existing_jobs.update(new_job_data)
-
-    # Save data in file
-    # if new_job_data:
+    
+    # Save data in file    
     with open(filename, 'w') as f:
         #indent=4: Этот аргумент указывает на отступ в
             #4 пробела для удобочитаемости выходного JSON-файла.
         json.dump(existing_jobs, f, indent=4) 
+
+# Pull cookies from txt
+def load_cookies(filename):
+    try:
+        with open(filename, 'r') as file:
+            cookies = json.load(file)
+            return cookies
+    except FileNotFoundError:
+        print("ERROR - NO COOKIE")
+        return None
+
+# Send keys to input field
+def input_keys(driver, xpath, input_keys):
+    input_field = driver.find_element(By.XPATH, xpath)
+    input_field.send_keys(input_keys)
+ 
+def click(driver, xpath):
+    target = driver.find_element(By.XPATH, xpath)
+    target.click()
+
+# Read email in gmail
+def gmail_read(imap_server, email_adress, imap_user, imap_password, email_subject):
+    # Connecting to IMAP server and creating object IMAP4_SSL
+    mail = imaplib.IMAP4_SSL(imap_server)
+    

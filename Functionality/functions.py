@@ -1,3 +1,4 @@
+from unittest import result
 from webbrowser import Chrome
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
@@ -9,6 +10,8 @@ import datetime
 import imaplib
 import email
 from email.header import decode_header
+import quopri
+from bs4 import BeautifulSoup
 import re
 
 # Getting url for job searching
@@ -89,7 +92,55 @@ def click(driver, xpath):
     target.click()
 
 # Read email in gmail
-def gmail_read(imap_server, email_adress, imap_user, imap_password, email_subject):
+def gmail_read(imap_server, imap_user_email, imap_password, email_subject):
     # Connecting to IMAP server and creating object IMAP4_SSL
     mail = imaplib.IMAP4_SSL(imap_server)
+    mail.login(imap_user_email, imap_password)
+    # Search for email in inbox folder by subject
+    mail.select("INBOX")
+    result, data = mail.search(None,f'(UNSEEN SUBJECT "{email_subject}")')
     
+    if result == 'OK':
+        # Construct a list of unique email identifiers from the fetched information
+        email_ids = data[0].split()
+        # Check if we have unread e-mail with subject
+        if email_ids:
+            # Reciving last email id(new email)
+            # print("Email IDs:", email_ids)
+            latest_email_id = email_ids[-1]
+            _, email_data = mail.fetch(latest_email_id, "(RFC822)")
+            raw_email = email_data[0][1]
+            # print("Raw Email:", raw_email)
+            # Reciving  email_message data [0] - The original contents of the email,
+            # a raw text copy of the email received directly from the IMAP server.
+            # data[1] - he second element must contain the contents of the letter itself in the form of bytes
+            email_message = email.message_from_bytes(raw_email)
+            # print("Email Message:", email_message)
+
+            # Getting text from email
+            for part_email in email_message.walk():
+                if part_email.get_content_type() == "text/html":
+                    # Decode from bites to line 
+                    email_message_body = part_email.get_payload(decode=True).decode()
+                    # Extracting text from html
+                    text_email_message = extract_text_from_html(email_message_body)
+                    # print(text_email_message)
+                    code = extract_indeed_code(text_email_message)
+                    print(code)
+                    return code
+            # return None
+
+            # print(email_message)
+def extract_text_from_html(html_content):
+    soup = BeautifulSoup(html_content, 'html.parser')
+    text = soup.get_text()
+    return text
+
+def extract_indeed_code(email_message_body):
+    # Searching for line with autorization code
+    match = re.search(r'Use this six digit code to sign in to your Indeed account:\s*\n*\s*(\d{6})', email_message_body)
+    if match:
+            code = match.group(1)  # Извлекаем шестизначный код
+            return code
+    else:
+        return None

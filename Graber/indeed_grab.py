@@ -15,21 +15,21 @@ import random
 
 # Create a new browser instance 
     # torn off google security login check
-options = Options()
-profile = "C:\\Users\\stanh\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 3"
-options.add_argument(f"user-data-dir={profile}")
+# options = Options()
+# profile = "C:\\Users\\stanh\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 3"
+# options.add_argument(f"user-data-dir={profile}")
 #     # Setup
-driver = webdriver.Edge(options=options)
-driver = webdriver.Edge()
+# driver = webdriver.Chrome(options=options)
+driver = webdriver.Chrome()
     # Fullscrin browser
 driver.maximize_window()
-driver.get("https://www.google.com/") 
-time.sleep(2)
-click(driver, '//span[@class="gb_Kd"]')
-time.sleep(2)
-input_keys(driver,'//input[@type="email"]', 'stan.se.gordon@gmail.com')
-time.sleep(2)
-click(driver, '//button[@class="VfPpkd-LgbsSe VfPpkd-LgbsSe-OWXEXe-k8QpJ VfPpkd-LgbsSe-OWXEXe-dgl2Hf nCP5yc AjY5Oe DuMIQc LQeN7 BqKGqe Jskylb TrZEUc lw1w4b"]')
+# driver.get("https://www.google.com/") 
+# time.sleep(2)
+# click(driver, '//span[@class="gb_Kd"]')
+# time.sleep(2)
+# input_keys(driver,'//input[@type="email"]', 'stan.se.gordon@gmail.com')
+# time.sleep(2)
+# click(driver, '//button[@class="VfPpkd-LgbsSe VfPpkd-LgbsSe-OWXEXe-k8QpJ VfPpkd-LgbsSe-OWXEXe-dgl2Hf nCP5yc AjY5Oe DuMIQc LQeN7 BqKGqe Jskylb TrZEUc lw1w4b"]')
 
 
 # loggin into accaunt utilizing googl acc
@@ -45,17 +45,18 @@ time.sleep(random.uniform(1,7))
 click(driver, '//a[@id="auth-page-google-otp-fallback"]')
 # click(driver, '//button[@id="gsuite-login-google-button"]')
 time.sleep(random.uniform(1,7))
+gmail_read("imap.gmail.com", "stan.se.gordon@gmail.com", "Skaya2301!", "Indeed one-time passcode")
 
 # switch to login pop_up window
-original_window = driver.window_handles[0]
-google_login_page = driver.window_handles[-1]
-driver.switch_to.window(google_login_page)
-input_keys(driver,'//input[@type="email"]', 'stan.se.gordon@gmail.com')
-time.sleep(random.uniform(1,7))
-click(driver, '//button[@class="VfPpkd-LgbsSe VfPpkd-LgbsSe-OWXEXe-k8QpJ VfPpkd-LgbsSe-OWXEXe-dgl2Hf nCP5yc AjY5Oe DuMIQc LQeN7 BqKGqe Jskylb TrZEUc lw1w4b"]')
-time.sleep(13)
-# pass credantials from env verable
-user = os.environ.get("indeed_username")
+# original_window = driver.window_handles[0]
+# google_login_page = driver.window_handles[-1]
+# driver.switch_to.window(google_login_page)
+# input_keys(driver,'//input[@type="email"]', 'stan.se.gordon@gmail.com')
+# time.sleep(random.uniform(1,7))
+# click(driver, '//button[@class="VfPpkd-LgbsSe VfPpkd-LgbsSe-OWXEXe-k8QpJ VfPpkd-LgbsSe-OWXEXe-dgl2Hf nCP5yc AjY5Oe DuMIQc LQeN7 BqKGqe Jskylb TrZEUc lw1w4b"]')
+# time.sleep(13)
+# # pass credantials from env verable
+# user = os.environ.get("indeed_username")
 
 # getting url for scrapping
 indeed_search_url = get_url("software+qa", indeed_job_search_3days)
@@ -66,10 +67,7 @@ driver.get(indeed_search_url)
 # Waiting for the page to load
 wait_loading_page(driver, 5,'//footer[@class="icl-GlobalFooter"]')
 
-
-
-
-# click on job_description to open side menu with "apply button" and click on "apply button"
+# Сlick on job_description to open side menu with "apply button" and click on "apply button"
 job_title_links = {}
 next_page = driver.find_element(By.XPATH, '//a[@data-testid="pagination-page-next"]')
 

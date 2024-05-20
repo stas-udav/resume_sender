@@ -13,6 +13,8 @@ from email.header import decode_header
 import quopri
 from bs4 import BeautifulSoup
 import re
+import string
+import random
 
 # Getting url for job searching
 def get_url(position, website):
@@ -127,10 +129,12 @@ def gmail_read(imap_server, imap_user_email, imap_password, email_subject):
                     # print(text_email_message)
                     code = extract_indeed_code(text_email_message)
                     print(code)
+                    # Mark the email as deleted
+                    mail.store(latest_email_id, '+FLAGS', '\\Deleted')
+                    # Permanently remove deleted emails
+                    mail.expunge()
                     return code
-            # return None
-
-            # print(email_message)
+            
 def extract_text_from_html(html_content):
     soup = BeautifulSoup(html_content, 'html.parser')
     text = soup.get_text()
@@ -144,3 +148,20 @@ def extract_indeed_code(email_message_body):
             return code
     else:
         return None
+    
+
+# Generate random right part of email
+def email_randomize(email):
+    # separate left and right part of email
+    email_parts = email.split("@")
+    user_part_email = email_parts[0]
+    domain_part_email = email_parts[1]
+    # generate random str for user_part of email
+    random_symbols = ""
+    for _ in range(5):
+        random_symbol = random.choice(string.ascii_lowercase)
+        random_symbols += random_symbol
+               
+    modified_email = user_part_email + "+" + random_symbols + "@" + domain_part_email
+    print(modified_email)
+    return modified_email

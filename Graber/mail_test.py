@@ -12,5 +12,8 @@ import os
 import time
 import random
 
+# opne profile
 
-gmail_read("imap.gmail.com", "stan.se.gordon@gmail.com", "kzne wtez kfmq kuxd", "Indeed one-time passcode")
+email = email_randomize("stan.se.gordon@gmail.com")
+
+# gmail_read("imap.gmail.com", "stan.se.gordon@gmail.com", "kzne wtez kfmq kuxd", "Indeed one-time passcode")   

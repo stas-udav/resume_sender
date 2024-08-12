@@ -3,6 +3,7 @@ from webbrowser import Chrome
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import time
 import json
@@ -15,6 +16,8 @@ from bs4 import BeautifulSoup
 import re
 import string
 import random
+
+from trio import sleep_until
 
 # Getting url for job searching
 def get_url(position, website):
@@ -165,3 +168,13 @@ def email_randomize(email):
     modified_email = user_part_email + "+" + random_symbols + "@" + domain_part_email
     print(modified_email)
     return modified_email
+
+def wait_element(driver, xpath):
+    wait = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By. XPATH, xpath)))
+    return wait
+
+# random sleep time
+def random_sleep(min_sec, max_second):
+    sleep_time = random.uniform(min_sec, max_second)
+    time.sleep(sleep_time)
+

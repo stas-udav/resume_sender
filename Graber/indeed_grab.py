@@ -1,4 +1,5 @@
 #! /usr/bin/env python3
+import logging
 from pydoc import cli
 from Config.indeed_config import *
 from Functionality.functions import *
@@ -7,11 +8,16 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import NoSuchElementException
-
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 import os
 import time
 import random
+import logging
 
+# from symbol import argument
+logging.basicConfig(level=logging.INFO, filename='app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 # Create a new browser instance 
     # torn off google security login check
@@ -20,7 +26,7 @@ import random
 # options.add_argument(f"user-data-dir={profile}")
 #     # Setup
 # driver = webdriver.Chrome(options=options)
-driver = webdriver.Chrome()
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
     # Fullscrin browser
 driver.maximize_window()
 # driver.get("https://www.google.com/") 
@@ -48,18 +54,21 @@ time.sleep(random.uniform(1,7))
 click(driver, '//button[@type="submit"]')
 # click(driver, '//button[@id="login-google-button"]')
 time.sleep(random.uniform(1,7))
-sing_in_button = driver.find_element(By.XPATH, '//a[@id="auth-page-google-otp-fallback"]]')
+sing_in_button = wait_element(driver, '//a[@id="auth-page-google-otp-fallback"]')
+# driver.find_element(By.XPATH, '//a[@id="auth-page-google-otp-fallback"]]')
 sing_in_button_text = sing_in_button.text
 print(sing_in_button_text)
 # click(driver, sing_in_button)
-# driver.execute_script("arguments[0]:",sing_in_button)
+driver.execute_script("arguments[0]:",sing_in_button)
 # click(driver, '//button[@id="gsuite-login-google-button"]')
 time.sleep(random.uniform(1,7))
 # getting autorization code from e-mail and paste into passcode input field
 code = gmail_read("imap.gmail.com", "stan.se.gordon@gmail.com", "kzne wtez kfmq kuxd", "Indeed one-time passcode")
 input_keys(driver, '//input[@id="passcode-input"]', code)
 time.sleep(random.uniform(1,7))
-click(driver, '//button[@data-tn-element="otp-verify-login-submit-button"]')
+btn_next = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//button[@data-tn-element="otp-verify-login-submit-button"]')))
+driver.execute_script("argument[0].click()", btn_next)
+# click(driver, '//button[@data-tn-element="otp-verify-login-submit-button"]')
 wait_loading_page(driver,3, '//button[@type="submit"]')
 #####
 # switch to login pop_up window
@@ -112,7 +121,7 @@ while next_page:
                 print(job_title)
                 job_link = job.find_element(By.XPATH, '//a').get_attribute('href')
                 # company_name_job = job.text.split('\n')[4].strip()
-                company_name = job.find_element(By.XPATH, '.0//span[@data-testid="company-name"]').text
+                company_name = job.find_element(By.XPATH, './/span[@data-testid="company-name"]').text
                 # print (apply_button.text)
                 print(job_link)
                 print(company_name)                

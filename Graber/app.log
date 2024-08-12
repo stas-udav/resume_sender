@@ -1,0 +1,10 @@
+WDM - INFO - ====== WebDriver manager ======
+WDM - INFO - Get LATEST chromedriver version for google-chrome
+WDM - INFO - Get LATEST chromedriver version for google-chrome
+WDM - INFO - Get LATEST chromedriver version for google-chrome
+WDM - INFO - WebDriver version 126.0.6478.126 selected
+WDM - INFO - Modern chrome version https://storage.googleapis.com/chrome-for-testing-public/126.0.6478.126/win32/chromedriver-win32.zip
+WDM - INFO - About to download new driver from https://storage.googleapis.com/chrome-for-testing-public/126.0.6478.126/win32/chromedriver-win32.zip
+WDM - INFO - Driver downloading response is 200
+WDM - INFO - Get LATEST chromedriver version for google-chrome
+WDM - INFO - Driver has been saved in cache [C:\Users\stanh\.wdm\drivers\chromedriver\win64\126.0.6478.126]

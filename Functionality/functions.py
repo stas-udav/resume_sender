@@ -173,8 +173,12 @@ def wait_element(driver, xpath):
     wait = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By. XPATH, xpath)))
     return wait
 
+def wait_elements(driver, xpath):
+    wait = WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, xpath)))
+    return wait
+
 # random sleep time
 def random_sleep(min_sec, max_second):
-    sleep_time = random.uniform(min_sec, max_second)
-    time.sleep(sleep_time)
+    time.sleep(random.uniform(min_sec, max_second))
+    
 

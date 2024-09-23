@@ -49,7 +49,7 @@ def save_jobs_json(jobs_data, filename):
     existing_jobs = {}
     try:
         with open(filename, 'r') as file:
-            # Check if file with data
+            # Check if file with dataё
             if file.read().strip():
                 # Rolling back the file to the beginning, since we have read it to the end
                 file.seek(0)
@@ -88,9 +88,10 @@ def load_cookies(filename):
         return None
 
 # Send keys to input field
-def input_keys(driver, xpath, input_keys):
+def input_keys(driver, xpath, input_keys):    
     input_field = driver.find_element(By.XPATH, xpath)
     input_field.send_keys(input_keys)
+    random_sleep(0.1, 3)
  
 def click(driver, xpath):
     target = driver.find_element(By.XPATH, xpath)
@@ -170,11 +171,11 @@ def email_randomize(email):
     return modified_email
 
 def wait_element(driver, xpath):
-    wait = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By. XPATH, xpath)))
+    wait = WebDriverWait(driver, 50).until(EC.presence_of_element_located((By. XPATH, xpath)))
     return wait
 
 def wait_elements(driver, xpath):
-    wait = WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, xpath)))
+    wait = WebDriverWait(driver, 20).until(EC.presence_of_all_elements_located((By.XPATH, xpath)))
     return wait
 
 # random sleep time

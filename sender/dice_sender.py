@@ -1,3 +1,4 @@
+from calendar import c
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver import ActionChains
@@ -7,6 +8,8 @@ import time, datetime
 from Functionality.functions import wait_element, input_keys, random_sleep, wait_elements, today_date, save_jobs_json
 from Functionality.functions import click
 import re
+import json
+import os
 
 # driver = webdriver.Chrome(options=options)
 driver = webdriver.Chrome()
@@ -52,14 +55,25 @@ random_sleep(1, 3)
 work_setting = ['Remote', 'Last 3 Days', 'Yes']
 for filter in work_setting:
     set_element = wait_element(driver, f"//div[@id='searchFacetsDesktop']//*[normalize-space(text())= '{filter}']")
-    time.sleep(0.2) 
-    set_element.click()
-    time.sleep(0.1)
+    action.move_to_element(set_element).perform()
+    time.sleep(1) 
+    driver.execute_script("arguments[0].click();", set_element)
+    random_sleep(0.3, 0.5)    
     print(set_element.text)
 
 # Going through jobs, click on them and save date, apply
 # next_page_disbled = wait_element(driver, '//li[@class="pagination-next page-item ng-star-inserted disabled"]')
 
+# print(os.getcwd()) 
+currend_dir = os.getcwd()
+alredy_sent_jobs = os.path.join(currend_dir, 'jobs_dice.json') #'jobs_dice.json'
+with open(alredy_sent_jobs, 'r') as f:
+    if os.path.getsize(alredy_sent_jobs) == 0:
+        print('file is empty')
+        alredy_sent_jobs = {}
+    else:
+        alredy_sent_jobs = json.load(f)
+        print(alredy_sent_jobs)
 # page = 0
 while True:
     next_page_btn = wait_element(driver, '//li[@class="pagination-next page-item ng-star-inserted"]')
@@ -69,16 +83,17 @@ while True:
         break
     jobs = driver.find_elements(By.XPATH, '//a[@data-cy="card-title-link"]')
     num_el = len(jobs)
-    print(num_el)
+    # print(num_el)
     saved_jobs = 0
+    # already_sent_jobs = {}
     time.sleep(1)
     for i in range(num_el):
         # if i >= len(jobs):
         #     print("Page is over, found {saved_jobs} jobs")
         #     break
-        try:
-            # Перезахват элемента внутри цикла
-            # jobs = driver.find_elements(By.XPATH, '//a[@data-cy="card-title-link"]')
+        try:                           
+            # print('break')      
+            # break
             job = jobs[i]
             action.move_to_element(job).click().perform()
             random_sleep(1, 3)          
@@ -98,12 +113,27 @@ while True:
                 job_title = driver.find_element(By.XPATH, '//h1[@data-cy="jobTitle"]')
                 job_title_text = job_title.text            
                 print(job_title_text)
+                job_id = driver.find_element(By.XPATH, '//apply-button-wc')
+                job_id_text = job_id.get_attribute('job-id')
+                print(job_id_text)
                 company_name = driver.find_element(By.XPATH, '//a[@data-cy="companyNameLink"]')
                 company_name_text = company_name.text
                 print(company_name_text)
-                job_data[job_title_text] = [ company_name_text, today_date()]
+                if job_id_text in alredy_sent_jobs:
+                    print(f'job = {job_title_text} already sent')
+                    driver.close()
+                    driver.switch_to.window(driver.window_handles[0]) 
+                    continue
+                alredy_sent_jobs[job_id_text] = [job_title_text, company_name_text, today_date()]            
+                # with open("dice_test.json", 'w') as f:
+                #     json.dump(alredy_sent_jobs, f, indent=4)
+                # break
+                # job_data[job_title_text] = [ company_name_text, today_date()]
+                # job_data = {}
+                # job_data[job_title_text][ company_name_text].get
                 wait_element(driver, '//dhi-seds-nav-footer')
-                wait_element(driver, '//div[@id="buttons"]')
+                wait_element(driver, '//div[@id="buttons"]')              
+                  
                 time.sleep(5)
                 apply = driver.execute_script('return document.querySelector("#applyButton > apply-button-wc").shadowRoot.querySelector("apply-button > div > button")')
                 driver.execute_script('arguments[0].click();', apply)
@@ -111,14 +141,19 @@ while True:
                 next_btn = wait_element(driver, '//button[@class="seds-button-primary btn-next"]')
                 next_btn.click()
                 submit_btn = wait_element(driver, '//button[span/text()="Submit"]')
+                random_sleep(0.5, 1.5)
                 submit_btn.click()
-                time.sleep(10)
+                # time.sleep(10)
                 save_jobs_json(job_data, "jobs_dice.json") 
-                random_sleep(1, 3)
+                saved_jobs += 1
+                # random_sleep(1, 3)
                 driver.close()
-                driver.switch_to.window(driver.window_handles[0])
-            saved_jobs += 1
+                driver.switch_to.window(driver.window_handles[0])            
             print (saved_jobs)
+            with open('jobs_dice.json', 'w') as f:
+                json.dump(alredy_sent_jobs, f, indent=4)
+                print(alredy_sent_jobs)
+            # save_jobs_json
         except StaleElementReferenceException as e:
             print(f"StaleElementReferenceException {i}: {e}")
             continue 

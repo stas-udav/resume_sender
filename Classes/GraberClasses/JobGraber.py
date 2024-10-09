@@ -8,15 +8,19 @@ from selenium.common.exceptions import NoSuchElementException
 
 
 
+
 class JobGraber:
-    def __init__(self, driver):
+    def __init__(self, driver, job_website):
+        self.link = job_website
         self.driver = driver
 
 # getting url for scrapping
-    def get_url(self, job_website, position):
-        url = job_website.format(position)
+    def get_url(self, position):
+        url = self.link.format(position)
         return url
-    
+
+    def set_pages(self, num_pages):
+        self.num_pages = num_pages
 # Waiting for the page to load
 def wait_loading_page(self, timeout, element_xpath):
     try:
@@ -27,3 +31,6 @@ def wait_loading_page(self, timeout, element_xpath):
     except TimeoutException:
         print("page loading ERROR")
 
+
+dice = JobGraber(driver, "www.dice.com")
+dice.set_pages(10)

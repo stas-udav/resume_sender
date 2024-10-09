@@ -49,7 +49,7 @@ def save_jobs_json(jobs_data, filename):
     existing_jobs = {}
     try:
         with open(filename, 'r') as file:
-            # Check if file with dataё
+            # Check if file with data
             if file.read().strip():
                 # Rolling back the file to the beginning, since we have read it to the end
                 file.seek(0)
@@ -171,7 +171,7 @@ def email_randomize(email):
     return modified_email
 
 def wait_element(driver, xpath):
-    wait = WebDriverWait(driver, 50).until(EC.presence_of_element_located((By. XPATH, xpath)))
+    wait = WebDriverWait(driver, 50).until(EC.presence_of_element_located((By.XPATH, xpath)))
     return wait
 
 def wait_elements(driver, xpath):

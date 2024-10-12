@@ -1,4 +1,3 @@
-from calendar import c
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver import ActionChains
@@ -10,6 +9,7 @@ from Functionality.functions import click
 import re
 import json
 import os
+from selenium.common.exceptions import JavascriptException
 
 # driver = webdriver.Chrome(options=options)
 driver = webdriver.Chrome()
@@ -46,7 +46,7 @@ driver.get("https://www.dice.com/jobs")
 # action.move_to_element(location_btn).perform()
 wait_element(driver,'//dhi-seds-nav-footer')
 time.sleep(2)
-input_keys(driver, '//input[@id="typeaheadInput"]', "software quality assurance engineer")
+input_keys(driver, '//input[@id="typeaheadInput"]', "Software qa")
 random_sleep(0.1, 3)
 submit_search_button = driver.find_element(By.XPATH, '//button[@id="submitSearch-button"]')
 submit_search_button.click()
@@ -73,14 +73,13 @@ with open(alredy_sent_jobs, 'r') as f:
         alredy_sent_jobs = {}
     else:
         alredy_sent_jobs = json.load(f)
-        print(alredy_sent_jobs)
+        # print(alredy_sent_jobs)
 # page = 0
 while True:
     next_page_btn = wait_element(driver, '//li[@class="pagination-next page-item ng-star-inserted"]')
     job_data = {}
     # disabled_next_page_btn = wait_element(driver, '//li[@class="pagination-next page-item ng-star-inserted disabled"]')
-    if not next_page_btn :
-        break
+    
     jobs = driver.find_elements(By.XPATH, '//a[@data-cy="card-title-link"]')
     num_el = len(jobs)
     # print(num_el)
@@ -124,19 +123,21 @@ while True:
                     driver.close()
                     driver.switch_to.window(driver.window_handles[0]) 
                     continue
-                alredy_sent_jobs[job_id_text] = [job_title_text, company_name_text, today_date()]            
-                # with open("dice_test.json", 'w') as f:
-                #     json.dump(alredy_sent_jobs, f, indent=4)
-                # break
-                # job_data[job_title_text] = [ company_name_text, today_date()]
-                # job_data = {}
-                # job_data[job_title_text][ company_name_text].get
+                alredy_sent_jobs[job_id_text] = [job_title_text, company_name_text, today_date()]         
                 wait_element(driver, '//dhi-seds-nav-footer')
                 wait_element(driver, '//div[@id="buttons"]')              
                   
                 time.sleep(5)
                 apply = driver.execute_script('return document.querySelector("#applyButton > apply-button-wc").shadowRoot.querySelector("apply-button > div > button")')
-                driver.execute_script('arguments[0].click();', apply)
+                try:
+                    driver.execute_script('arguments[0].click();', apply)
+                except JavascriptException as e:
+                    print(f" {i} Alredy applied: {e}")
+                    alredy_sent_jobs[job_id_text] = [job_title_text, company_name_text, today_date()]
+                    print(alredy_sent_jobs)
+                    driver.close()
+                    driver.switch_to.window(driver.window_handles[0]) 
+                    continue
                 wait_element(driver, '//dhi-seds-nav-footer')
                 next_btn = wait_element(driver, '//button[@class="seds-button-primary btn-next"]')
                 next_btn.click()
@@ -144,20 +145,30 @@ while True:
                 random_sleep(0.5, 1.5)
                 submit_btn.click()
                 # time.sleep(10)
-                save_jobs_json(job_data, "jobs_dice.json") 
+                # save_jobs_json(job_data, "jobs_dice.json") 
                 saved_jobs += 1
                 # random_sleep(1, 3)
                 driver.close()
                 driver.switch_to.window(driver.window_handles[0])            
-            print (saved_jobs)
-            with open('jobs_dice.json', 'w') as f:
-                json.dump(alredy_sent_jobs, f, indent=4)
-                print(alredy_sent_jobs)
-            # save_jobs_json
+                # print (saved_jobs)
+                with open('jobs_dice.json', 'w') as f:
+                    json.dump(alredy_sent_jobs, f, indent=4)
+                    # print(alredy_sent_jobs)
+                # save_jobs_json
         except StaleElementReferenceException as e:
             print(f"StaleElementReferenceException {i}: {e}")
             continue 
-       
+    try:
+        disabled_next_page_btn = driver.find_element(By.XPATH, '//li[@class="pagination-next page-item ng-star-inserted disabled"]')
+        break  # Exit loop if "Next Page" is disabled
+    except NoSuchElementException:
+        pass  # Continue if "Next Page" is not disabled
+
+  # Move to the next page (if not disabled)
+    action.move_to_element(next_page_btn).perform()
+    time.sleep(2)
+    next_page_btn.click()
+    time.sleep(0.2)
 #     # Move to next page btn and click
 #     action.move_to_element(next_page_btn).perform
 #     time.sleep(2)
@@ -166,7 +177,7 @@ while True:
 #     # saved_jobs = 0
 
    
-    # # Move to next page btn and click until last page
+    # Move to next page btn and click until last page
     # action.move_to_element(next_page_btn).perform
     # time.sleep(2)
     # next_page_btn.click()

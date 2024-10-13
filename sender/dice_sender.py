@@ -4,7 +4,7 @@ from selenium.webdriver import ActionChains
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 from selenium.webdriver.support import expected_conditions as EC
 import time, datetime
-from Functionality.functions import wait_element, input_keys, random_sleep, wait_elements, today_date, save_jobs_json
+from Functionality.functions import wait_element, input_keys, random_sleep, wait_elements, today_date
 from Functionality.functions import click
 import re
 import json
@@ -82,11 +82,13 @@ while True:
     
     jobs = driver.find_elements(By.XPATH, '//a[@data-cy="card-title-link"]')
     num_el = len(jobs)
-    # print(num_el)
+    # print(num_el)на
     saved_jobs = 0
     # already_sent_jobs = {}
     time.sleep(1)
     for i in range(num_el):
+        print(i) 
+        print(num_el)
         # if i >= len(jobs):
         #     print("Page is over, found {saved_jobs} jobs")
         #     break
@@ -119,7 +121,7 @@ while True:
                 company_name_text = company_name.text
                 print(company_name_text)
                 if job_id_text in alredy_sent_jobs:
-                    print(f'job = {job_title_text} already sent')
+                    print(f'JOB = {job_title_text} already SENT, skipping...')
                     driver.close()
                     driver.switch_to.window(driver.window_handles[0]) 
                     continue
@@ -141,20 +143,29 @@ while True:
                 wait_element(driver, '//dhi-seds-nav-footer')
                 next_btn = wait_element(driver, '//button[@class="seds-button-primary btn-next"]')
                 next_btn.click()
-                submit_btn = wait_element(driver, '//button[span/text()="Submit"]')
-                random_sleep(0.5, 1.5)
-                submit_btn.click()
-                # time.sleep(10)
-                # save_jobs_json(job_data, "jobs_dice.json") 
-                saved_jobs += 1
-                # random_sleep(1, 3)
-                driver.close()
-                driver.switch_to.window(driver.window_handles[0])            
-                # print (saved_jobs)
-                with open('jobs_dice.json', 'w') as f:
-                    json.dump(alredy_sent_jobs, f, indent=4)
-                    # print(alredy_sent_jobs)
-                # save_jobs_json
+                try:
+                    submit_btn = wait_element(driver, '//button[span/text()="Submit"]')
+                    random_sleep(0.5, 1.5)
+                    submit_btn.click()
+                    # time.sleep(10)
+                    # save_jobs_json(job_data, "jobs_dice.json") 
+                    saved_jobs += 1
+                    # random_sleep(1, 3)
+                    driver.close()
+                    driver.switch_to.window(driver.window_handles[0])            
+                    # print (saved_jobs)
+                    with open('jobs_dice.json', 'w') as f:
+                        json.dump(alredy_sent_jobs, f, indent=4)
+                        # print(alredy_sent_jobs)
+                    # save_jobs_json
+                    print(i)
+                except Exception as e:
+                    print(f"not a standart apply {e}")
+                    driver.close()
+                    driver.switch_to.window(driver.window_handles[0])
+                    print(i) 
+                    continue
+    
         except StaleElementReferenceException as e:
             print(f"StaleElementReferenceException {i}: {e}")
             continue 
@@ -163,12 +174,17 @@ while True:
         break  # Exit loop if "Next Page" is disabled
     except NoSuchElementException:
         pass  # Continue if "Next Page" is not disabled
+    if i == num_el - 1:
+        action.move_to_element(next_page_btn).perform()
+        time.sleep(2)
+        next_page_btn.click()
+        time.sleep(2)
 
   # Move to the next page (if not disabled)
-    action.move_to_element(next_page_btn).perform()
-    time.sleep(2)
-    next_page_btn.click()
-    time.sleep(0.2)
+    # action.move_to_element(next_page_btn).perform()S
+    # time.sleep(2)
+    # next_page_btn.click()
+    # time.sleep(0.2)
 #     # Move to next page btn and click
 #     action.move_to_element(next_page_btn).perform
 #     time.sleep(2)

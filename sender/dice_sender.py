@@ -1,16 +1,17 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver import ActionChains
-from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
+from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException, TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
 import time, datetime
-from Functionality.functions import wait_element, input_keys, random_sleep, wait_elements, today_date
-from Functionality.functions import click
+from Functionality.functions import save_sent_jobs, wait_element, input_keys, random_sleep, wait_elements, today_date
+from Functionality.functions import click, create_login_window
 import re
 import json
 import os
 from selenium.common.exceptions import JavascriptException
 
+username, password = create_login_window()
 # driver = webdriver.Chrome(options=options)
 driver = webdriver.Chrome()
     # Fullscrin browser
@@ -23,21 +24,23 @@ action = ActionChains(driver)
 
 # Login, input email and than next page is password input
 wait_element(driver, '//input[@type="email"]')
-input_keys(driver, '//input[@type="email"]', "stan.hordon@gmail.com")
+input_keys(driver, '//input[@type="email"]', username)
 click(driver, '//button[@type="submit"]')
 wait_element(driver, '//input[@placeholder="Enter Password"]')
-input_keys(driver, '//input[@placeholder="Enter Password"]', "skaya2301")
+input_keys(driver, '//input[@placeholder="Enter Password"]', password)
 wait_element(driver,'//dhi-seds-nav-footer')
 click(driver, '//button[@data-testid="submit-password"]')
 random_sleep(0.1, 3)
 
 # Checking pop up and close if present
-if wait_element(driver, '//div[@class="fe-popup-content"]'):   
-    time.sleep(1) 
-    driver.find_element(By.XPATH, '//div[@class="fe-popup-cross"]').click()       
-else:    
-    pass
-
+try:
+    if wait_element(driver, '//div[@class="fe-popup-content"]'):   
+        time.sleep(1) 
+        driver.find_element(By.XPATH, '//div[@class="fe-popup-cross"]').click()       
+    else:    
+        pass
+except TimeoutException:
+    print("Element not found. Proceeding with other actions...")
 random_sleep(0.1, 3)
 
 # Searching for job possition by filters
@@ -153,10 +156,8 @@ while True:
                     # random_sleep(1, 3)
                     driver.close()
                     driver.switch_to.window(driver.window_handles[0])            
-                    # print (saved_jobs)
-                    with open('jobs_dice.json', 'w') as f:
-                        json.dump(alredy_sent_jobs, f, indent=4)
-                        # print(alredy_sent_jobs)
+                    # print (saved_jobs)                    
+                    save_sent_jobs('jobs_dice.json', alredy_sent_jobs)
                     # save_jobs_json
                     print(i)
                 except Exception as e:
@@ -179,28 +180,5 @@ while True:
         time.sleep(2)
         next_page_btn.click()
         time.sleep(2)
-
-  # Move to the next page (if not disabled)
-    # action.move_to_element(next_page_btn).perform()S
-    # time.sleep(2)
-    # next_page_btn.click()
-    # time.sleep(0.2)
-#     # Move to next page btn and click
-#     action.move_to_element(next_page_btn).perform
-#     time.sleep(2)
-#     next_page_btn.click()
-#     # time.sleep(0.2)  
-#     # saved_jobs = 0
-
-   
-    # Move to next page btn and click until last page
-    # action.move_to_element(next_page_btn).perform
-    # time.sleep(2)
-    # next_page_btn.click()
-    # time.sleep(0.2)
-    # try:
-    #     disabled_next_page_btn = driver.find_element(By.XPATH, '//li[@class="pagination-next page-item ng-star-inserted disabled"]')
-    #     break        
-    # except NoSuchElementException:
-    #     pass
-    # saved_jobs = 0
+        print("Page is over, click on next page")
+  

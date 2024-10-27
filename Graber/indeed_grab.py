@@ -9,7 +9,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
+# from webdriver_manager.chrome import ChromeDriverManager
 import os
 import time
 import random
@@ -25,8 +25,8 @@ logger = logging.getLogger(__name__)
 # profile = "C:\\Users\\stanh\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 3"
 # options.add_argument(f"user-data-dir={profile}")
 #     # Setup
-# driver = webdriver.Chrome(options=options)
-driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+driver = webdriver.Chrome()
+# driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
     # Fullscrin browser
 driver.maximize_window()
 # driver.get("https://www.google.com/") 

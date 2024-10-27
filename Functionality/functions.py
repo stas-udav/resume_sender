@@ -1,3 +1,4 @@
+from tkinter import messagebox
 from unittest import result
 from webbrowser import Chrome
 from selenium import webdriver
@@ -16,6 +17,8 @@ from bs4 import BeautifulSoup
 import re
 import string
 import random
+import tkinter as tk
+from tkinter import messagebox
 
 from trio import sleep_until
 
@@ -183,3 +186,58 @@ def random_sleep(min_sec, max_second):
     time.sleep(random.uniform(min_sec, max_second))
     
 
+def save_sent_jobs(file_naneme, alredy_sent_jobs_dict):
+    with open(file_naneme, 'w') as f:
+        json.dump(alredy_sent_jobs_dict, f, indent=4)
+        # print("saved")
+
+def create_login_window():
+   
+    # Create login window
+    window = tk.Tk()
+    window.title("Login")
+    window.geometry("300x150")
+    window.resizable(True, True)
+    window.configure(bg="grey")
+
+    # Variables to store input
+    username = tk.StringVar()
+    password = tk.StringVar()
+
+    # Create username label and entry
+    username_label = tk.Label(window, text="Username:")
+    username_entry = tk.Entry(window)
+
+    # Create password label and entry
+    password_label = tk.Label(window, text="Password:")
+    password_entry = tk.Entry(window, show="*")
+
+    # Create grid layout
+    username_label.grid(row=0, column=0, padx=10, pady=10)
+    username_entry.grid(row=0, column=1, padx=10, pady=10)
+
+    password_label.grid(row=1, column=0, padx=10, pady=10)
+    password_entry.grid(row=1, column=1, padx=10, pady=10)
+
+    
+
+     # Function to close the window and return the input
+    def get_input(username_entry, password_entry):
+        if not username_entry.get() or not password_entry.get():
+            messagebox.showerror("Error", "Please enter username and password")
+        else:
+            username_value = username_entry.get()
+            password_value = password_entry.get()
+            window.quit()  # Закрытие окна
+            window.destroy()
+            print("Username:", username_entry.get())
+            return username_value, password_value
+
+    # Create login button
+    submit_button = tk.Button(window, text="Sing in", command=lambda: get_input(username_entry, password_entry))
+    submit_button.grid(row=2, columnspan=2, padx=10, pady=10)
+
+    # Start the main window event loop
+    window.mainloop()
+    return username.get(), password.get()
+    

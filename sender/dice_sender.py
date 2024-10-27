@@ -99,6 +99,10 @@ while True:
             # print('break')      
             # break
             job = jobs[i]
+            print(job.text)
+            # time.sleep(2)
+            # driver.execute_script("arguments[0].scrollIntoView(true);", job)
+            # time.sleep(10)
             action.move_to_element(job).click().perform()
             random_sleep(1, 3)          
             # check domain
@@ -107,13 +111,13 @@ while True:
             # print(new_url)
             # check if the new url is from dice.com domain
             # if not, that means it's an external url and we should not apply
+            # if it's a dice.com url, continue with the loop
             if not re.match(r'^https://www\.dice\.com/', new_url):
                 # if it's an external url, print a message and break the loop
                 print("external url")
                 driver.back()
                 continue
-            else:
-                # if it's a dice.com url, continue with the loop
+            else:                
                 job_title = driver.find_element(By.XPATH, '//h1[@data-cy="jobTitle"]')
                 job_title_text = job_title.text            
                 print(job_title_text)

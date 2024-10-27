@@ -201,8 +201,8 @@ def create_login_window():
     window.configure(bg="grey")
 
     # Variables to store input
-    username = tk.StringVar()
-    password = tk.StringVar()
+    username_value = ""
+    password_value = ""
 
     # Create username label and entry
     username_label = tk.Label(window, text="Username:")
@@ -223,21 +223,20 @@ def create_login_window():
 
      # Function to close the window and return the input
     def get_input(username_entry, password_entry):
+        nonlocal username_value, password_value
         if not username_entry.get() or not password_entry.get():
             messagebox.showerror("Error", "Please enter username and password")
         else:
             username_value = username_entry.get()
-            password_value = password_entry.get()
-            window.quit()  # Закрытие окна
+            password_value = password_entry.get()                     
+            # print("Username:", username_entry.get())
             window.destroy()
-            print("Username:", username_entry.get())
-            return username_value, password_value
-
+            window.quit()  # Закрытие окна   
     # Create login button
     submit_button = tk.Button(window, text="Sing in", command=lambda: get_input(username_entry, password_entry))
     submit_button.grid(row=2, columnspan=2, padx=10, pady=10)
 
     # Start the main window event loop
     window.mainloop()
-    return username.get(), password.get()
+    return username_value, password_value
     

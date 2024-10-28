@@ -1,9 +1,10 @@
+from xml.dom.minidom import Element
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver import ActionChains
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException, TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
-import time, datetime
+import time
 from Functionality.functions import save_sent_jobs, wait_element, input_keys, random_sleep, wait_elements, today_date
 from Functionality.functions import click, create_login_window
 import re
@@ -33,18 +34,27 @@ click(driver, '//button[@data-testid="submit-password"]')
 random_sleep(0.1, 3)
 
 # Checking pop up and close if present
-try:
-    if wait_element(driver, '//div[@class="fe-popup-content"]'):   
-        time.sleep(1) 
-        driver.find_element(By.XPATH, '//div[@class="fe-popup-cross"]').click()       
-    else:    
-        pass
-except TimeoutException:
-    print("Element not found. Proceeding with other actions...")
+# try:
+#     if wait_element(driver, '//div[@class="fe-popup-content"]'):   
+#         time.sleep(1) 
+#         driver.find_element(By.XPATH, '//div[@class="fe-popup-cross"]').click()       
+#     else:    
+#         pass
+# except TimeoutException:
+#     print("Element not found. Proceeding with other actions...")
 random_sleep(0.1, 3)
 
-# Searching for job possition by filters
+# Searching for job possition by filters  
+# //button[@id="reload-button"]
 driver.get("https://www.dice.com/jobs")
+try:
+    while True:
+        button = driver.find_element(By.XPATH, '//button[@id="reload-button"]')
+        button.click()    
+        
+except NoSuchElementException:
+    print("Page loaded successfully")
+    
 # location_btn = driver.find_element(By.XPATH,'//button[@id="IPGeoLocateButton"]')
 # action.move_to_element(location_btn).perform()
 wait_element(driver,'//dhi-seds-nav-footer')
@@ -54,8 +64,8 @@ random_sleep(0.1, 3)
 submit_search_button = driver.find_element(By.XPATH, '//button[@id="submitSearch-button"]')
 submit_search_button.click()
 random_sleep(1, 3)
-
-work_setting = ['Remote', 'Last 3 Days', 'Yes']
+#  Remote  
+work_setting = ['Hybrid', 'Last 3 Days', 'Yes'] 
 for filter in work_setting:
     set_element = wait_element(driver, f"//div[@id='searchFacetsDesktop']//*[normalize-space(text())= '{filter}']")
     action.move_to_element(set_element).perform()
@@ -77,7 +87,7 @@ with open(alredy_sent_jobs, 'r') as f:
     else:
         alredy_sent_jobs = json.load(f)
         # print(alredy_sent_jobs)
-# page = 0
+count_saved_jobs = 0
 while True:
     next_page_btn = wait_element(driver, '//li[@class="pagination-next page-item ng-star-inserted"]')
     job_data = {}
@@ -90,7 +100,7 @@ while True:
     # already_sent_jobs = {}
     time.sleep(1)
     for i in range(num_el):
-        print(i) 
+        # print(i) 
         print(num_el)
         # if i >= len(jobs):
         #     print("Page is over, found {saved_jobs} jobs")
@@ -100,9 +110,11 @@ while True:
             # break
             job = jobs[i]
             print(job.text)
-            # time.sleep(2)
+            time.sleep(2)
+            # Scroll to the top of the page before clicking the job
+            driver.execute_script("window.scrollTo(0, 0);")
             # driver.execute_script("arguments[0].scrollIntoView(true);", job)
-            # time.sleep(10)
+            random_sleep(3, 10)
             action.move_to_element(job).click().perform()
             random_sleep(1, 3)          
             # check domain
@@ -152,15 +164,18 @@ while True:
                 next_btn.click()
                 try:
                     submit_btn = wait_element(driver, '//button[span/text()="Submit"]')
-                    random_sleep(0.5, 1.5)
+                    random_sleep(0.5, 2.5)
                     submit_btn.click()
                     # time.sleep(10)
                     # save_jobs_json(job_data, "jobs_dice.json") 
                     saved_jobs += 1
-                    # random_sleep(1, 3)
+                    random_sleep(1, 3)
                     driver.close()
                     driver.switch_to.window(driver.window_handles[0])            
-                    # print (saved_jobs)                    
+                    # print (saved_jobs) 
+                    random_sleep(1, 9)
+                    count_saved_jobs += 1
+                    print(f"saved {saved_jobs} jobs")                   
                     save_sent_jobs('jobs_dice.json', alredy_sent_jobs)
                     # save_jobs_json
                     print(i)
@@ -185,4 +200,5 @@ while True:
         next_page_btn.click()
         time.sleep(2)
         print("Page is over, click on next page")
+        random_sleep(3, 10)
   

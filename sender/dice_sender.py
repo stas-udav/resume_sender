@@ -4,7 +4,7 @@ from selenium.webdriver import ActionChains
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException, TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
 import time
-from Functionality.functions import save_sent_jobs, wait_element, input_keys, random_sleep, wait_elements, today_date
+from Functionality.functions import save_sent_jobs, wait_element, input_keys, random_sleep, today_date
 from Functionality.functions import click, create_login_window
 import re
 import json
@@ -64,7 +64,8 @@ submit_search_button = driver.find_element(By.XPATH, '//button[@id="submitSearch
 submit_search_button.click()
 random_sleep(1, 3)
 #  Remote  
-work_setting = ['Hybrid', 'Last 3 Days', 'Yes'] 
+#  Any Date Last 3 Days
+work_setting = ['Hybrid', 'Any Date', 'Yes'] 
 for filter in work_setting:
     set_element = wait_element(driver, f"//div[@id='searchFacetsDesktop']//*[normalize-space(text())= '{filter}']")
     action.move_to_element(set_element).perform()

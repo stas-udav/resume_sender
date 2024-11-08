@@ -1,4 +1,3 @@
-from turtle import pos
 from urllib import response
 import cloudscraper
 import cfscrape

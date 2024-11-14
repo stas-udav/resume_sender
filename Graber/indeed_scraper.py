@@ -74,7 +74,7 @@ import time
 #     with open ("content.html", "w", encoding="utf-8") as f:
 #         f.write(content)
 
-url = "https://www.indeed.com/jobs?q=software+qa+engineer&fromage=3&vjk=562853c172cdc4e0"
+url = "https://www.indeed.com/jobs?q=software+qa+engineer&fromage=3"
 scraper = cloudscraper.create_scraper()
 res = scraper.get(url)
 print(res.status_code)

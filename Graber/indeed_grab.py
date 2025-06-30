@@ -2,7 +2,8 @@
 import logging
 from pydoc import cli
 from Config.indeed_config import *
-from Functionality.functions import *
+from Functionality.functions import save_sent_jobs, wait_element, input_keys, random_sleep, today_date
+from Functionality.functions import click
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
